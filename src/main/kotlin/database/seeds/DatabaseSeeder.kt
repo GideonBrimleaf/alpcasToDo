@@ -1,6 +1,6 @@
-package __PACKAGE__.database.seeds
+package com.example.alpacasToDo.database.seeds
 
-import __PACKAGE__.database.factories.UserFactory
+import com.example.alpacasToDo.database.factories.UserFactory
 import dev.alpas.Application
 import dev.alpas.make
 import dev.alpas.ozone.Seeder

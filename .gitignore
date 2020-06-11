@@ -73,3 +73,10 @@ node_modules
 storage/sessions
 storage/src
 !gradle/wrapper
+.idea/.gitignore
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/misc.xml
+.idea/templateLanguages.xml
+.idea/vcs.xml
+package-lock.json
