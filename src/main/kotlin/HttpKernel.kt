@@ -1,7 +1,9 @@
 package com.example.alpacasToDo
 
+import dev.alpas.AppConfig
 import dev.alpas.Application
 import dev.alpas.ServiceProvider
+import dev.alpas.appConfig
 import dev.alpas.encryption.EncryptionServiceProvider
 import dev.alpas.hashing.HashServiceProvider
 import dev.alpas.http.HttpKernel
