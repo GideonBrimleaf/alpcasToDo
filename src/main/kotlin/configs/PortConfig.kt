@@ -7,7 +7,7 @@ import dev.alpas.Environment
 class PortConfig(env: Environment) : AppConfig(env) {
     init {
         println("*******************")
-        println(env("PORT"))
+        println(env.isProduction)
     }
     override val appPort = env("PORT", 8080)
 }
