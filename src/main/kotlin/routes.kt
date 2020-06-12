@@ -1,5 +1,6 @@
 package com.example.alpacasToDo
 
+import com.example.alpacasToDo.controllers.TaskController
 import com.example.alpacasToDo.controllers.WelcomeController
 import dev.alpas.routing.RouteGroup
 import dev.alpas.routing.Router
@@ -14,8 +15,10 @@ fun Router.addRoutes() = apply {
 }
 
 private fun RouteGroup.webRoutesGroup() {
-    get("/", WelcomeController::index).name("welcome")
-    // register more web routes here
+    get("/", TaskController::index).name("welcome")
+    post("/", TaskController::store).name("store")
+    delete("/", TaskController::delete).name("delete")
+    patch("/", TaskController::update).name("update")
 }
 
 private fun Router.apiRoutes() {
