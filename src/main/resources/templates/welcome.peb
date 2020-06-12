@@ -22,7 +22,7 @@
 
 <div class="container mx-auto pt-20 px-20">
     <div class="w-full flex justify-between mx-auto">
-        <div class="w-1/2 text-4xl font-extrabold text-gray-700"> To-Do List</div>
+        <div class="w-1/2 text-4xl font-extrabold text-gray-700"> Alpacas To-Do List</div>
         <div class="text-center">
             <!-- Here we show completed tasks vs total tasks -->
             <h5 class="text-4xl font-extrabold text-blue-600"> {{ completed }} / {{ total }}</h5>
