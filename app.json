@@ -1,6 +1,0 @@
-{
-  "name": "Alpacas To Do",
-  "description": "A to-do list for Alpacas",
-  "image": "heroku/java",
-  "addons": [ "jawsdb" ]
-}
