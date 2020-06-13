@@ -1,1 +1,1 @@
-web:    java -jar -Dserver.port=$PORT -Xss512k ./alpacasToDo.jar
+web:    java -jar ./alpacasToDo.jar
