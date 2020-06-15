@@ -142,3 +142,4 @@ Once that has successfully executed you can then bring back up the app
 Refreshing your browser should bring up your home page and you are up and running in Heroku!
 
 >Tip - you may still find that the migration exits too early because the dyno capacity on the free tier has been maxed out.  If this happens try making a trivial change to your project to force a new deploy (with the Heroku web process set to 0), navigate to `App > More > Restart All Dynos` to reset the box.  Then try to run the migration command.
+>Alternatively try `App > More > Restart All Dynos` followed by `heroku ps:scale web=0` to ensure that the app is not running when trying to run a migration
