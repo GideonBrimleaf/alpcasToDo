@@ -69,8 +69,7 @@ it also doesn't expose your `.env.development` file and commit.
 >
 >`git update-index --assume-unchanged .env` 
 >
->Git will then ignore any subsequent changes to that file, so you could put all the contents from `.env.development` back in >and they will not be committed to your repository. This means you can also continue to
->run your project locally.
+>Git will then ignore any subsequent changes to that file, so you could put all the contents from `.env.development` back in and they will not be committed to your repository. This means you can also continue to run your project locally.
 
 Finally - go ahead and rebuild your project:
 
