@@ -1,59 +1,159 @@
-### Alpas - The Rapid and Delightful Kotlin Web Framework. Easy, elegant, and productive! 🚀
+# Deploying an Alpas 🚀 App to Heroku
 
->This repo is the starter template for the [Alpas web framework](https://alpas.dev). If you want to contribute to
->the core of Alpas framework, please visit the [core Alpas repository](https://github.com/alpas/alpas).
-
-#### **New to Alpas?** Read [the docs][alpas-docs] or follow a full tutorial on [Building a web app from scratch to finish with Alpas + Kotlin][devto-tutorial].
-
+>These instructions will step you through the requirements to deploy an existing Alpas app
+>to Heroku. These assume you have the following before you start:
+>   1. An existing Alpas app running locally with a MySQL database connection - the Alpas docs are excellent 
+>for [creating a new project](https://alpas.dev/docs/quick-start-guide-todo-list)
+>   2. A [Heroku account](https://heroku.com/) as well as the 
+>[Heroku CLI Tools](https://devcenter.heroku.com/articles/heroku-cli) installed
 ---
 
-Alpas is a batteries-included yet a modular web framework for Kotlin with a very strong focus on developers' productivity.
+## Part One - Preparing Your Alpas App
 
-The main goal of Alpas is to get you started quickly and enable you to move faster while letting you enjoy doing what you are the best at — crafting a delightful web app.
+### 1. Adding Additional Files
 
-It is fun to build an HTML web app or an API only app with Alpas.
+Heroku reads from a special `Procfile` to run your application which should be in the root of your
+project.  This file should contain the command to execute the alpas jar file:
 
-Alpas strives to be simple and elegant and wants to serve you whether you have written any JVM based web
-apps before or not—there is no xml or properties files to configure, no scattered annotations
-to memorize—and yet, there is no huge learning curve to get started.
+>*Procfile*
+>
+>```web:    java -jar ./myApp.jar```
 
-Alpas comes bundled with most of what you need to write modern web apps—**authentication**,
-**auth scaffolding**, **email verification**, **notifications**, **mail**, **queues**,
-**fast and intuitive routing**, **powerful templating engine** etc.—and yet it
-remains flexible for you to extend it to make it more powerful and
-delightful than it already is.
+Additionally, you need a `system.properties` file which will specify for Heroku the Java Runtime Environment (JRE) that is required to 
+run the project:
 
-We have sweated picking the good parts, so you don’t have to!
+>*system.properties*
+>
+>```java.runtime.version=1.9```
 
-Alpas is also very modular so you still have the authority to choose what you like and don't like.
-Create an HTML web app or keep it simple with an API only app, Alpas gets out of the way to let you take the control. 
+We need to ensure that we are using Alpas version >=`0.16.3` since this allows us to explicitly set the `APP_HOST` variable
+(required later). Check the following and update accordingly in your `build.gradle` file:
 
-### About Starter Repo
+>*build.gradle*
+>
+>`ext.alpas_version = '0.16.3'` 
 
-This repo is meant to be used as a template for starting a new Alpas web app. After creating a new
-repo off of this template and cloning on your local machine, make sure to follow the
-[setup instructions][alpas-setup] to get started. After you have completed your app, don't forget to share which the community by requesting to add it to [Alpas Resources][alpas-resources]
+Heroku randomly assigns a port in its environment for you to serve your app from. This is available from the system environment variable `"PORT"`
+but you won't know what it is until runtime, so we can't store it as a concrete environment variable.  Instead, the following allows you to read
+what the port number is when running and allow your app to be served up there, defaulting to 8080 in your local environment:
 
-### Pre-requisites
+>*src/main/kotlin/configs/PortConfig.kt*
+>
+>```
+>package com.example.myApp.configs
+>
+>import dev.alpas.AppConfig
+>import dev.alpas.Environment
+>
+>@Suppress("unused")
+>class PortConfig(env: Environment) : AppConfig(env) {
+>    override val appPort = env("PORT", 8080)
+>}
+>
+>```
 
-Please visit [Alpas installation documentation][alpas-setup] for a full list of system
-requirements and pre-requisites. Here is a quick list of what you need:
+### 2. Adjusting and Committing the .env file
 
-* *nix machine. Windows is supported but only under the WSL or using GitBash.
-* JDK version >= 9.0
-* Gradle >= 5.6
-* IntelliJ IDEA Community Editor or Ultimate.
-* NodeJS and Yarn (Optional)
+As per the [Alpas docs](https://alpas.dev/docs/configuration#environment) - you shouldn't usually commit your project's `.env` file.
+However Heroku builds your app from your git repository, and since your Alpas needs the presence of a `.env` file to deploy this is one of
+the cases where we need to break the rules.
 
-### Quick Start
-After you have finished selecting option to **Use this template**, added a project name, and cloned to your local machine per [Creating New Project](https://alpas.dev/docs/installation) instructions, you can now perform the following steps on your machine to get rollin'! 
-1. At the root of the project, there is a script named *alpas*. Make it executable: `chmod +x ./alpas`
-2. Initialize your new project using the full package name: `./alpas init com.example.myapp`
-3. To serve your app, do: `./alpas serve`
+Before you commit your `.env` file, I'd recommend creating a duplicate `.env.development` file and moving all of your `.env` file contents
+to this dummy version.  Double check that this new `.env.development` file is being ignored by git (the starter template `.gitignore` file should 
+ignore this automatically). Your `.env` should now be stripped of pretty much everything and look something like this:
 
-[happy-kotlin]: https://medium.com/signal-v-noise/kotlin-makes-me-a-happier-better-programmer-1fc668724563
-[alpas-slack]: https://join.slack.com/t/alpasdev/shared_invite/enQtODcwMjE1MzMxODQ3LTJjZWMzOWE5MzBlYzIzMWQ2MTcxN2M2YjU3MTQ5ZDE4NjBmYjY1YTljOGIwYmJmYWFlYjc4YTcwMDFmZDIzNDE
-[alpas-docs]: https://alpas.dev/docs
-[alpas-setup]: https://alpas.dev/docs/installation
-[devto-tutorial]: https://dev.to/ashokgelal/let-s-build-a-web-app-from-scratch-to-finish-with-alpas-and-kotlin-29eo
-[alpas-resources]: https://github.com/alpas/resources
+>*.env*
+>```
+>APP_NAME=myApp
+>ENABLE_NETWORK_SHARE=false
+>
+>MIX_APP_PORT=8080
+>```
+
+Don't worry we'll add all the rest back to Heroku later. For now remove your `.env` file from `.gitignore` making sure
+it also doesn't expose your `.env.development` file and commit.
+
+>Tip - once committed, you could then run 
+>
+>`git update-index --assume-unchanged .env` 
+>
+>Git will then ignore any subsequent changes to that file, so you could put all the contents from
+>`.env.development` back in and they will not be committed to your repository. This means you can also continue to
+>run your project locally.
+
+Finally - go ahead and rebuild your project:
+
+>`./alpas jar`
+
+
+## Part Two - Preparing Your Heroku Environment
+
+### 1. Configuring the environment
+
+You're now ready to set up your Heroku environment:
+
+>`heroku create`
+
+ This will create an app in your account and set it as a remote for this project. Logging into your account via the browser
+ navigate to the `App > Settings` section and click on `Reveal Config Vars`.
+ 
+ You will now be able to add in all the contents of your `.env` file (which you copied over to your `.env.development` previously). 
+ Note, you can also do this via the command line with `heroku config:set {KEY}="{VALUE}"`. Some additional important variables to add:
+ 
+>* `APP_HOST = 0.0.0.0`  This binds your app to run on `0.0.0.0` rather than localhost (`127.0.0.1`) which is essential for Heroku. 
+> Remember, you need to be using Alpas 0.16.3 or greater to get this to work.
+>* `GRADLE_TASK = shadowJar` This tells Heroku how to build your gradle project
+
+Some variables will need to be altered/removed compared to your `.env` file:
+>* Any of the `DB` configs - we will add these once we have provisioned a Heroku database
+>* `APP_PORT` - this should not be added as we're dynamically deriving this from our `PortConfig.kt` file
+>* `APP_LEVEL = prod` this will put your app into production mode
+
+### 2. Setting up MYSQL
+
+On Heroku navigate to `Resources` and search for mysql.  Heroku supports a number of MYSQL database providers, I've used 
+[JawsDB](https://elements.heroku.com/addons/jawsdb) successfully so feel free to use that but any should work fine. Once installed
+click on the add-on in Heroku, this will take you to its dashboard page which has some important information:
+
+* The host url
+* The username - note this will most likely not be root and be automatically provisioned
+* The password
+* The database name - if you're using JawsDB on the free tier it will automatically
+create one for you, you cannot create additional dbs without upgrading to a paid plan
+* The port number
+
+Add these keys to your Heroku `Settings > Config Vars` with the following values:
+
+>* `DB_HOST = {The host URL}`
+>* `DB_CONNECTION = mysql`
+>* `DB_DATABASE = {The database name}`
+>* `DB_PORT = {The port}`
+>* `DB_USERNAME = {The username}`
+>* `DB_PASSWORD = {The password}`
+
+## Part Three - Deploying and Running Migrations
+
+You are now ready to deploy to Heroku!  Make sure you have a compiled jar file in your project root:
+
+>`./alpas jar`
+
+Then `git push heroku master` - Heroku will then detect that it needs to run the that it needs to install
+the right JDK version (as per our `system.properties` file) and build a gradle project as
+per the `shadowJar` value we gave it earlier. This should be up and running at your designated Heroku url.
+
+Navigating to this should give us a big ol' 500 error (but the nice shiny one from Alpas) - time to run a migration!
+
+In order to successfully migrate on the free tier of Heroku, you need to temporarily bring down your app as there is not
+enough RAM on the dyno to both serve the app and run the migration:
+
+>`heroku ps:scale web=0`
+
+Then run the migration on Heroku:
+
+> `heroku run ./alpas db:migrate`
+
+Once that has successfully executed you can then bring back up the app
+
+> `heroku ps:scale web=1`
+
+Refreshing your browser should bring up your home page and you are up and running in Heroku!
