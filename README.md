@@ -62,7 +62,7 @@ Alpas needs a `.env` file in the production environment to run migration scripts
 >
 >fun main(args: Array<String>) {
 >    val file = File(".env")
->    if (!file.exists()){
+>    if (!file.exists()) {
 >        file.createNewFile()
 >    }
 >    return Alpas(args).routes { addRoutes() }.ignite()
