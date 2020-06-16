@@ -12,11 +12,11 @@
 
 ### 1. Adding Additional Files
 
-Heroku reads from a special `Procfile` to run your application which should be in the root of your project.  This file should contain the command to execute the alpas jar file:
+Heroku reads from a special `Procfile` to run your application which should be in the root of your project.  This file should contain the command to create an empty .env file in production (which is required for the app to run) and execute the project's jar file:
 
 >*Procfile*
 >
->```web:    java -jar ./myApp.jar```
+>```web:  touch .env && java -jar ./myApp.jar```
 
 Additionally, you need a `system.properties` file which will specify for Heroku the Java Runtime Environment (JRE) that is required to run the project:
 
@@ -48,29 +48,6 @@ Heroku randomly assigns a port in its environment for you to serve your app from
 >
 >```
 
-### 2. Adjusting and Committing the .env file
-
-As per the [Alpas docs](https://alpas.dev/docs/configuration#environment) - you shouldn't usually commit your project's `.env` file. However Heroku builds your app from your git repository, and since your Alpas app needs the presence of a `.env` file to deploy this is one of the cases where we need to break the rules.
-
-Before you commit your `.env` file, I'd recommend creating a duplicate `.env.development` file and moving all of your `.env` file contents to this dummy version.  Double check that this new `.env.development` file is being ignored by git (the starter template `.gitignore` file should ignore this automatically). Your `.env` should now be stripped of pretty much everything and look something like this:
-
->*.env*
->```
->APP_NAME=myApp
->ENABLE_NETWORK_SHARE=false
->
->MIX_APP_PORT=8080
->```
-
-Don't worry we'll add all the rest back to Heroku later. For now remove your `.env` file from `.gitignore` making sure
-it also doesn't expose your `.env.development` file and commit.
-
->Tip - once committed, you could then run 
->
->`git update-index --assume-unchanged .env` 
->
->Git will then ignore any subsequent changes to that file, so you could put all the contents from `.env.development` back in and they will not be committed to your repository. This means you can also continue to run your project locally.
-
 Finally - go ahead and rebuild your project:
 
 >`./alpas jar`
@@ -87,7 +64,7 @@ You're now ready to set up your Heroku environment:
 This will create an app in your account and set it as a remote for this project. Logging into your account via the browser
 navigate to the `App > Settings` section and click on `Reveal Config Vars`.
  
-You will now be able to add in all the contents of your `.env` file (which you copied over to your `.env.development` previously). Note, you can also do this via the command line with `heroku config:set {KEY}="{VALUE}"`. Some additional important variables to add:
+You will now be able to add in all the contents of your `.env` file. Note, you can also do this via the command line with `heroku config:set {KEY}="{VALUE}"`. Some additional important variables to add:
  
 >* `APP_HOST = 0.0.0.0`  This binds your app to run on `0.0.0.0` rather than localhost (`127.0.0.1`) which is essential for Heroku. Remember, you need to be using Alpas 0.16.3 or greater to get this to work.
 >* `GRADLE_TASK = shadowJar` This tells Heroku how to build your gradle project
@@ -99,8 +76,7 @@ Some variables will need to be altered/removed compared to your `.env` file:
 
 ### 2. Setting up MYSQL
 
-On Heroku navigate to `Resources` and search for mysql.  Heroku supports a number of MYSQL database providers, I've used 
-[JawsDB](https://elements.heroku.com/addons/jawsdb) successfully so feel free to use that but any should work fine. Once installed click on the add-on in Heroku, this will take you to its dashboard page which has some important information:
+On Heroku navigate to `Resources` and search for mysql.  Heroku supports a number of MYSQL database providers, I've used [JawsDB](https://elements.heroku.com/addons/jawsdb) successfully so feel free to use that but any should work fine. Once installed click on the add-on in Heroku, this will take you to its dashboard page which has some important information:
 
 * The host url
 * The username - note this will most likely not be root and be automatically provisioned
