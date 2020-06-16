@@ -12,24 +12,17 @@
 
 ### 1. Adding Additional Files
 
-Heroku reads from a special `Procfile` to run your application which should be in the root of your project.  This file should contain the command to create an empty .env file in production (which is required for the app to run) and execute the project's jar file:
+Heroku reads from a special `Procfile` to run your application which should be in the root of your project.  This file should contain the command to execute the project's jar file:
 
 >*Procfile*
 >
->```web:  touch .env && java -jar ./myApp.jar```
+>```web:  java -jar ./myApp.jar```
 
 Additionally, you need a `system.properties` file which will specify for Heroku the Java Runtime Environment (JRE) that is required to run the project:
 
 >*system.properties*
 >
 >```java.runtime.version=1.9```
-
-We need to ensure that we are using Alpas version >=`0.16.3` since this allows us to explicitly set the `APP_HOST` variable
-(required later). Check the following and update accordingly in your `build.gradle` file:
-
->*build.gradle*
->
->`ext.alpas_version = '0.16.3'` 
 
 Heroku randomly assigns a port in its environment for you to serve your app from. This is available from the system environment variable `"PORT"` but you won't know what it is until runtime, so we can't store it as a concrete environment variable.  Instead, the following allows you to read what the port number is when running and allow your app to be served up there, defaulting to 8080 in your local environment:
 
@@ -48,10 +41,37 @@ Heroku randomly assigns a port in its environment for you to serve your app from
 >
 >```
 
+### 2. Altering Existing Files
+
+We need to ensure that we are using Alpas version >=`0.16.3` since this allows us to explicitly set the `APP_HOST` variable
+(required later). Check the following and update accordingly in your `build.gradle` file:
+
+>*build.gradle*
+>
+>`ext.alpas_version = '0.16.3'` 
+
+Alpas needs a `.env` file in the production environment to run migration scripts amongst other processes. As per the [Alpas docs](https://alpas.dev/docs/configuration#environment) you shouldn't commit one, so we'll create an empty one in our route directory if it doesn't exist whenever the `main` app function is invoked:
+
+>*src/main/kotlin/start.kt*
+>
+>```
+>package com.example.myApp
+>
+>import dev.alpas.Alpas
+>import java.io.File
+>
+>fun main(args: Array<String>) {
+>    val file = File(".env")
+>    if (!file.exists()){
+>        file.createNewFile()
+>    }
+>    return Alpas(args).routes { addRoutes() }.ignite()
+>}
+>```
+
 Finally - go ahead and rebuild your project:
 
 >`./alpas jar`
-
 
 ## Part Two - Preparing Your Heroku Environment
 
