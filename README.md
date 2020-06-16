@@ -75,7 +75,7 @@ Finally - go ahead and rebuild your project:
 
 ## Part Two - Preparing Your Heroku Environment
 
-### 1. Configuring the environment
+### 1. Configuring the Environment
 
 You're now ready to set up your Heroku environment:
 
