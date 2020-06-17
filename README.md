@@ -137,5 +137,23 @@ Once that has successfully executed you can then bring back up the app
 
 Refreshing your browser should bring up your home page and you are up and running in Heroku!
 
->Tip - you may still find that the migration exits too early because the dyno capacity on the free tier has been maxed out.  If this happens try making a trivial change to your project to force a new deploy (with the Heroku web process set to 0), navigate to `App > More > Restart All Dynos` to reset the box.  Then try to run the migration command.
->Alternatively try `App > More > Restart All Dynos` followed by `heroku ps:scale web=0` to ensure that the app is not running when trying to run a migration
+## Subsequent Deployments
+
+Have successfully deployed to Heroku, future deployments follow three easy steps:
+
+>1. Commit your changes and recompile the project `./alpas jar`
+>2. Run `git push heroku master` to deploy to Heroku
+>3. If any migrations are required follow the migration steps above
+
+## Problems with Dyno Memory?
+
+>You may still find that the migration exits too early because the dyno capacity on the free tier has been maxed out.  If this happens try making a trivial change to your project to force a new deploy (with the Heroku web process set to 0), navigate to `App > More > Restart All Dynos` to reset the box.  Then try to run the migration command.
+>Alternatively try `App > More > Restart All Dynos` followed by `heroku ps:scale web=0` to ensure that the app is not running when trying to run a migration.
+
+### Migrating with the Compiled Project
+
+>If the problem persists, you will need to run the `db:migrate` command on the compiled jar file.  The normal `alpas` script recompiles the entire project before running the migration which likely requires too much RAM for the lower/free Heroku tier dynos.  
+>1. Create a new `alpas_prod.sh` file in the root of your project.
+>2. Copy and paste in the contents of [this sample file](https://gist.github.com/GideonBrimleaf/fb57c60f5b10c547d0f88468d4aaa9ad) into your `alpas_prod.sh` file. 
+>3. As per the original `alpas` script, make sure this new file has executable rights with `chmod +x ./alpas_prod.sh`
+>4. Step through Part Three above, substituting `heroku run ./alpas_prod.sh db:migrate` in for the migration command.  This will execute the migration without recompiling of the project. 
