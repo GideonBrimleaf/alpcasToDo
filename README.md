@@ -139,11 +139,11 @@ Refreshing your browser should bring up your home page and you are up and runnin
 
 ## Subsequent Deployments
 
-Have successfully deployed to Heroku, future deployments follow three easy steps:
+Having successfully deployed to Heroku, future deployments follow three simple steps:
 
 >1. Commit your changes and recompile the project `./alpas jar`
 >2. Run `git push heroku master` to deploy to Heroku
->3. If any migrations are required follow the migration steps above
+>3. If any migrations are required, follow the [migration steps](https://github.com/GideonBrimleaf/alpacasToDo#part-three---deploying-and-running-migrations) above
 
 ## Problems with Dyno Memory?
 
