@@ -24,7 +24,7 @@ Additionally, you need a `system.properties` file which will specify for Heroku 
 >
 >```java.runtime.version=1.9```
 
-Heroku randomly assigns a port in its environment for you to serve your app from. This is available from the system environment variable `"PORT"` but you won't know what it is until runtime, so we can't store it as a concrete environment variable.  Instead, the following allows you to read what the port number is when running and allow your app to be served up there, defaulting to 8080 in your local environment:
+Heroku randomly assigns a port in its environment to serve your app from. This is available from the system environment variable `PORT` but you won't know what it is until runtime, so we can't store it as a concrete environment variable.  Instead, the following allows you to read what the port number is when running and allow your app to be served up there, defaulting to 8080 in your local environment:
 
 >*src/main/kotlin/configs/PortConfig.kt*
 >
@@ -119,7 +119,7 @@ You are now ready to deploy to Heroku!  Make sure you have a compiled jar file i
 
 >`./alpas jar`
 
-Then `git push heroku master` - Heroku will then detect that it needs to run the that it needs to install the right JDK version (as per our `system.properties` file) and build a gradle project as per the `shadowJar` value we gave it earlier. This should be up and running at your designated Heroku url.
+Then `git push heroku master` - Heroku will then detect that it needs to install the right JDK version (as per our `system.properties` file) and build a gradle project as per the `shadowJar` value we gave it earlier. This should be up and running at your designated Heroku url.
 
 Navigating to this should give us a big ol' 500 error (but the nice shiny one from Alpas) - time to run a migration!
 
